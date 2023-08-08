@@ -18,14 +18,16 @@ scene.add(sun);
 //scene.add(ambientLight);
 
 let hexField = [];
-let hexFieldWidth = 10;
-let hexFieldHeight = 10;
+let hexFieldWidth = 15;
+let hexFieldHeight = 15;
 for( let i = 0; i < hexFieldWidth; i++) {
     hexField[i] = [];
     for( let j = 0; j < hexFieldHeight; j++) {
         hexField[i][j] = {
           height: 1,
-          color: 0x00aa00
+          color: 0x00aa00,
+          x: i,
+          y: j,
         };
     }
 }
@@ -69,7 +71,7 @@ const hexagonDepth = 0.2;
 function createHexField(hexField, hexFieldWidth, hexFieldHeight) {
   const height = 0.25;
     const xOffset = hexFieldWidth * 0.75;
-    const yOffset = hexFieldWidth * 0.75;
+    const yOffset = hexFieldHeight * 0.75;
     for( let j = 0; j < hexFieldHeight; j++) {
         for( let i = 0; i < hexFieldWidth; i++) {
             const hexagonGeometry = create3DHexagonGeometry(hexagonSize, hexagonDepth + hexField[i][j].height * height);
@@ -103,6 +105,7 @@ loader.load('models/Legionnaire_Final_Print.stl', function (geometry) {
   const mesh = new THREE.Mesh(geometry, material);
   mesh.customType = 'mech';
   mesh.position.set(-0.5, 1, 1.25);
+  moveMechToHex(mesh, hexField[parseInt(hexFieldWidth/2)][parseInt(hexFieldHeight/2)]);
   mesh.rotation.set(-Math.PI / 2, 0, 0.35);
   mesh.scale.set(0.05, 0.05, 0.05);
   scene.add(mesh);
@@ -142,15 +145,27 @@ function onClick(event) {
   }
 }
 
+function moveMechToHex(mech, hex) {
+  if( "height" in hex ) {
+    mech.position.x = hex.x * 1.75 - hexFieldWidth * 0.75;
+    mech.position.z = hex.y * 1.75 - hexFieldHeight * 0.75;
+    if( hex.x % 2 == 1) {
+      mech.position.z -= 0.875;
+    }
+  }
+  else {
+    mech.position.x = hex.position.x;
+    mech.position.z = hex.position.z;
+  }
+}
+
 function addSelection(object) {
   if( object.customType == 'hex'  &&  selections.length > 0  &&  selections[selections.length-1].object.customType == 'mech') {
     // Get the previous selection (a mech)
     const previousSelection = selections.pop();
     // Reset color of previousSelection (a mech)
     previousSelection.object.material.color.setHex(previousSelection.originalColor);
-    // Move previousSelection (a mech) to the new hex
-    previousSelection.object.position.x = object.position.x;
-    previousSelection.object.position.z = object.position.z;
+    moveMechToHex(previousSelection.object, object);
     return;
   }
   // If re-clicking on the same hex, reset the color and remove it from selections
@@ -165,6 +180,31 @@ function addSelection(object) {
   });
   object.material.color.setHex(0xffffff); // Change color to white
 }
+
+function getSelectedMech() {
+  if( selections.length > 0  &&  selections[selections.length-1].object.customType == 'mech') {
+    return selections[selections.length-1].object;
+  }
+  return null;
+}
+
+// Rotate the mesh by a given angle
+function rotateMech(object, angle) {
+  const rotationQuaternion = new THREE.Quaternion();
+  rotationQuaternion.setFromAxisAngle(new THREE.Vector3(0, 0, 1), angle);
+  object.quaternion.multiply(rotationQuaternion);
+}
+
+// Detect the left arrow key press and rotate the mesh
+window.addEventListener('keydown', function (event) {
+  if (event.key === 'ArrowLeft') {
+    const mech = getSelectedMech();
+    if( mech != null) {
+      const angle = THREE.MathUtils.degToRad(60); // Convert 120 degrees to radians
+      rotateMech(mech, angle);
+    }
+  }
+});
 
 function animate() {
   requestAnimationFrame(animate);
