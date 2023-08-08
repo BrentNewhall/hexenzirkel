@@ -204,6 +204,13 @@ window.addEventListener('keydown', function (event) {
       rotateMech(mech, angle);
     }
   }
+  else if (event.key === 'ArrowRight') {
+    const mech = getSelectedMech();
+    if( mech != null) {
+      const angle = THREE.MathUtils.degToRad(60); // Convert 120 degrees to radians
+      rotateMech(mech, -angle);
+    }
+  }
 });
 
 function animate() {
