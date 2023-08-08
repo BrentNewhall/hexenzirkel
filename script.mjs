@@ -3,6 +3,14 @@ import { MapControls } from 'three/addons/controls/MapControls.js';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
 
 let selections = [];
+let hexField = [];
+let hexFieldWidth = 1;
+let hexFieldHeight = 1;
+
+const colorMap = {
+  'g': 0x00aa00,
+  'm': 0x8b4513,
+}
 
 // Create the scene and camera
 const scene = new THREE.Scene();
@@ -17,29 +25,53 @@ scene.add(sun);
 //const ambientLight = new THREE.AmbientLight(0x404040); // Soft white light
 //scene.add(ambientLight);
 
-let hexField = [];
-let hexFieldWidth = 15;
-let hexFieldHeight = 15;
-for( let i = 0; i < hexFieldWidth; i++) {
-    hexField[i] = [];
-    for( let j = 0; j < hexFieldHeight; j++) {
-        hexField[i][j] = {
-          height: 1,
-          color: 0x00aa00,
-          x: i,
-          y: j,
+function parseDataToArray(fileContent) {
+  for( let [lineIndex,line] of fileContent.split('\n').entries()) {
+    hexField[lineIndex] = [];
+    line = line.trim();
+    if( line.length > 0 ) {
+      let cellIndex = 0;
+      while( line.length > 0 ) {
+        const height = parseInt(line[0]);
+        let hexType = line[1];
+        if( ! colorMap.hasOwnProperty(hexType) ) {
+          hexType = 'g';
+        }
+        hexField[lineIndex][cellIndex] = {
+          height: height,
+          color: colorMap[hexType],
+          x: cellIndex,
+          y: lineIndex
         };
+        line = line.substring(2);
+        cellIndex++;
+      }
     }
+  }
+  hexFieldWidth = hexField[0].length;
+  hexFieldHeight = hexField.length;
 }
-hexField[0][0].height = 3;
-hexField[0][1].height = 2;
-hexField[0][2].height = 2;
-hexField[1][0].height = 3;
-hexField[1][1].height = 2;
-hexField[1][2].height = 2;
-hexField[2][0].height = 2;
-hexField[0][0].color = 0x8b4513;
-hexField[1][0].color = 0x8b4513;
+
+function readMapFile(fileURL) {
+  fetch(fileURL)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to fetch the file');
+      }
+      return response.text();
+    })
+    .then((fileContent) => {
+      parseDataToArray(fileContent);
+      createHexField(hexField, hexFieldWidth, hexFieldHeight);
+      loadMechFile();
+      // Process the map data
+    })
+    .catch((error) => {
+      console.error('Error:', error.message);
+    });
+}
+
+readMapFile('maps/001.map');
 
 function create3DHexagonGeometry(size, depth) {
     const shape = new THREE.Shape();
@@ -96,26 +128,27 @@ function createHexField(hexField, hexFieldWidth, hexFieldHeight) {
         }
     }
 }
-createHexField(hexField, hexFieldWidth, hexFieldHeight);
 
 // Load STL file
-const loader = new STLLoader();
-loader.load('models/Legionnaire_Final_Print.stl', function (geometry) {
-  const material = new THREE.MeshLambertMaterial({ color: 0x666666 });
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.customType = 'mech';
-  mesh.position.set(-0.5, 1, 1.25);
-  moveMechToHex(mesh, hexField[parseInt(hexFieldWidth/2)][parseInt(hexFieldHeight/2)]);
-  mesh.rotation.set(-Math.PI / 2, 0, 0.35);
-  mesh.scale.set(0.05, 0.05, 0.05);
-  scene.add(mesh);
-},
-function (xhr) {
-  console.log(parseInt(xhr.loaded / xhr.total * 100) + '% loaded');
-},
-function (error) {
-  console.log('An error loading the STL occurred: ', error);
-});
+function loadMechFile() {
+  const loader = new STLLoader();
+  loader.load('models/Legionnaire_Final_Print.stl', function (geometry) {
+    const material = new THREE.MeshLambertMaterial({ color: 0x666666 });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.customType = 'mech';
+    mesh.position.set(-0.5, 0.75, 1.25);
+    moveMechToHex(mesh, hexField[parseInt(hexFieldWidth/2)][parseInt(hexFieldHeight/2)]);
+    mesh.rotation.set(-Math.PI / 2, 0, 0.35);
+    mesh.scale.set(0.05, 0.05, 0.05);
+    scene.add(mesh);
+  },
+  function (xhr) {
+    console.log(parseInt(xhr.loaded / xhr.total * 100) + '% loaded');
+  },
+  function (error) {
+    console.log('An error loading the STL occurred: ', error);
+  });
+}
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
