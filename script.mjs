@@ -11,6 +11,7 @@ const colorMap = {
   'g': 0x00aa00,
   'm': 0x8b4513,
 }
+let moving = null;
 
 // Create the scene and camera
 const scene = new THREE.Scene();
@@ -47,7 +48,6 @@ scene.add(getBaseLand());
 
 function parseDataToArray(fileContent) {
   for( let [lineIndex,line] of fileContent.split('\n').entries()) {
-    hexField[lineIndex] = [];
     line = line.trim();
     if( line.length > 0 ) {
       if( line[0] === '=' ) {
@@ -57,9 +57,9 @@ function parseDataToArray(fileContent) {
         const angle = parseInt(fields[2]);
         const filename = fields[3];
         loadMechFile(filename, x, y, angle);
-        hexField.pop();
       }
       else {
+        hexField[lineIndex] = [];
         let cellIndex = 0;
         while( line.length > 0 ) {
           const height = parseInt(line[0]);
@@ -81,6 +81,7 @@ function parseDataToArray(fileContent) {
   }
   hexFieldWidth = hexField[0].length;
   hexFieldHeight = hexField.length;
+  console.log(hexFieldWidth, hexFieldHeight);
 }
 
 function readMapFile(fileURL) {
@@ -95,9 +96,6 @@ function readMapFile(fileURL) {
       parseDataToArray(fileContent);
       createHexField(hexField, hexFieldWidth, hexFieldHeight);
     })
-    .catch((error) => {
-      console.error('Error:', error.message);
-    });
 }
 
 readMapFile('maps/001.map');
@@ -228,7 +226,12 @@ function addSelection(object) {
     const previousSelection = selections.pop();
     // Reset color of previousSelection (a mech)
     previousSelection.object.material.color.setHex(previousSelection.originalColor);
-    moveMechToHex(previousSelection.object, object);
+    moving = {
+      object: previousSelection.object,
+      target: object,
+      dx: (object.position.x - previousSelection.object.position.x) / 50,
+      dz: (object.position.z - previousSelection.object.position.z) / 50,
+    };
     return;
   }
   // If re-clicking on the same hex, reset the color and remove it from selections
@@ -282,7 +285,21 @@ window.addEventListener('keydown', function (event) {
   }
 });
 
+function moveMech() {
+  const mech = moving.object;
+  mech.position.x += moving.dx;
+  mech.position.z += moving.dz;
+  if( Math.abs(mech.position.x - moving.target.position.x) < 0.1  &&  Math.abs(mech.position.z - moving.target.position.z) < 0.1 ) {
+    mech.position.x = moving.target.position.x;
+    mech.position.z = moving.target.position.z;
+    moving = null;
+  }
+}
+
 function animate() {
+  if( moving != null ) {
+    moveMech();
+  }
   requestAnimationFrame(animate);
   controls.update();
   renderer.render(scene, camera);
