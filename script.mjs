@@ -202,7 +202,13 @@ function addSelection(object) {
     return;
   }
   // If re-clicking on the same hex, reset the color and remove it from selections
-  if( object.customType == 'hex'  &&  selections.length > 0  &&  selections[selections.length-1].object == object) {
+  if( object.customType == 'hex'  &&  selections.length > 0  &&  selections[selections.length-1].object.customType == 'hex') {
+    const previousSelection = selections.pop();
+    previousSelection.object.material.color.setHex(previousSelection.originalColor);
+    return;
+  }
+  // If re-clicking on the same mech, reset the color and remove it from selections
+  if( object.customType == 'mech'  &&  selections.length > 0  &&  selections[selections.length-1].object.customType == 'mech') {
     const previousSelection = selections.pop();
     previousSelection.object.material.color.setHex(previousSelection.originalColor);
     return;
