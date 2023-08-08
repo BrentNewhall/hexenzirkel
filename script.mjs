@@ -25,6 +25,30 @@ scene.add(sun);
 //const ambientLight = new THREE.AmbientLight(0x404040); // Soft white light
 //scene.add(ambientLight);
 
+// Load sky
+function loadSky(filename) {
+	const textureLoader = new THREE.TextureLoader();
+	const texture = textureLoader.load( filename, () => {
+		const rt = new THREE.WebGLCubeRenderTarget(texture.image.height);
+		rt.fromEquirectangularTexture(renderer, texture);
+		scene.background = rt.texture;
+	});
+}
+loadSky('textures/sky6.jpg');
+
+function getBaseLand() {
+  // Create a green material
+  const material = new THREE.MeshBasicMaterial({ color: 0x006600 });
+  // Create a cube geometry
+  const cubeGeometry = new THREE.BoxGeometry(30, 30, 30); // Width, height, depth
+  // Create a cube mesh with the cube geometry and green material
+  const cubeMesh = new THREE.Mesh(cubeGeometry, material);
+  cubeMesh.position.y = -15.1;
+  // Add the cube mesh to the scene
+  return cubeMesh;
+}
+scene.add(getBaseLand());
+
 function parseDataToArray(fileContent) {
   for( let [lineIndex,line] of fileContent.split('\n').entries()) {
     hexField[lineIndex] = [];
@@ -63,7 +87,9 @@ function readMapFile(fileURL) {
     .then((fileContent) => {
       parseDataToArray(fileContent);
       createHexField(hexField, hexFieldWidth, hexFieldHeight);
-      loadMechFile();
+      loadMechFile('Legionnaire_Final_Print.stl', 6, 3);
+      loadMechFile('Legionnaire_Final_Print.stl', 3, 6);
+      //loadMechFile('Mirness-1A.stl', 3, 6);
       // Process the map data
     })
     .catch((error) => {
@@ -130,14 +156,14 @@ function createHexField(hexField, hexFieldWidth, hexFieldHeight) {
 }
 
 // Load STL file
-function loadMechFile() {
+function loadMechFile(filename, x, y) {
   const loader = new STLLoader();
-  loader.load('models/Legionnaire_Final_Print.stl', function (geometry) {
+  loader.load('models/' + filename, function (geometry) {
     const material = new THREE.MeshLambertMaterial({ color: 0x666666 });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.customType = 'mech';
     mesh.position.set(-0.5, 0.75, 1.25);
-    moveMechToHex(mesh, hexField[parseInt(hexFieldWidth/2)][parseInt(hexFieldHeight/2)]);
+    moveMechToHex(mesh, hexField[x][y]);
     mesh.rotation.set(-Math.PI / 2, 0, 0.35);
     mesh.scale.set(0.05, 0.05, 0.05);
     scene.add(mesh);
