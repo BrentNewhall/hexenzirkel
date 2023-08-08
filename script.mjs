@@ -37,14 +37,10 @@ function loadSky(filename) {
 loadSky('textures/sky6.jpg');
 
 function getBaseLand() {
-  // Create a green material
   const material = new THREE.MeshBasicMaterial({ color: 0x006600 });
-  // Create a cube geometry
-  const cubeGeometry = new THREE.BoxGeometry(30, 30, 30); // Width, height, depth
-  // Create a cube mesh with the cube geometry and green material
+  const cubeGeometry = new THREE.BoxGeometry(30, 30, 30);
   const cubeMesh = new THREE.Mesh(cubeGeometry, material);
   cubeMesh.position.y = -15.1;
-  // Add the cube mesh to the scene
   return cubeMesh;
 }
 scene.add(getBaseLand());
@@ -87,10 +83,9 @@ function readMapFile(fileURL) {
     .then((fileContent) => {
       parseDataToArray(fileContent);
       createHexField(hexField, hexFieldWidth, hexFieldHeight);
-      loadMechFile('Legionnaire_Final_Print.stl', 6, 3);
-      loadMechFile('Legionnaire_Final_Print.stl', 3, 6);
-      //loadMechFile('Mirness-1A.stl', 3, 6);
-      // Process the map data
+      loadMechFile('Mirness-1A-reset.stl', 3, 6);
+      loadMechFile('BT-BushWacker_IIC-reset.stl', 6, 3);
+      loadMechFile('BT-BushWacker_IIC-reset.stl', 7, 5);
     })
     .catch((error) => {
       console.error('Error:', error.message);
@@ -162,9 +157,9 @@ function loadMechFile(filename, x, y) {
     const material = new THREE.MeshLambertMaterial({ color: 0x666666 });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.customType = 'mech';
-    mesh.position.set(-0.5, 0.75, 1.25);
+    mesh.position.set(-0.5, 0, 1.25);
     moveMechToHex(mesh, hexField[x][y]);
-    mesh.rotation.set(-Math.PI / 2, 0, 0.35);
+    mesh.rotation.set(-Math.PI / 2, 0, 0);
     mesh.scale.set(0.05, 0.05, 0.05);
     scene.add(mesh);
   },
