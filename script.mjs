@@ -50,21 +50,32 @@ function parseDataToArray(fileContent) {
     hexField[lineIndex] = [];
     line = line.trim();
     if( line.length > 0 ) {
-      let cellIndex = 0;
-      while( line.length > 0 ) {
-        const height = parseInt(line[0]);
-        let hexType = line[1];
-        if( ! colorMap.hasOwnProperty(hexType) ) {
-          hexType = 'g';
+      if( line[0] === '=' ) {
+        const fields = line.substring(1).split(' ');
+        const x = parseInt(fields[0]);
+        const y = parseInt(fields[1]);
+        const angle = parseInt(fields[2]);
+        const filename = fields[3];
+        loadMechFile(filename, x, y, angle);
+        hexField.pop();
+      }
+      else {
+        let cellIndex = 0;
+        while( line.length > 0 ) {
+          const height = parseInt(line[0]);
+          let hexType = line[1];
+          if( ! colorMap.hasOwnProperty(hexType) ) {
+            hexType = 'g';
+          }
+          hexField[lineIndex][cellIndex] = {
+            height: height,
+            color: colorMap[hexType],
+            x: cellIndex,
+            y: lineIndex
+          };
+          line = line.substring(2);
+          cellIndex++;
         }
-        hexField[lineIndex][cellIndex] = {
-          height: height,
-          color: colorMap[hexType],
-          x: cellIndex,
-          y: lineIndex
-        };
-        line = line.substring(2);
-        cellIndex++;
       }
     }
   }
@@ -83,9 +94,6 @@ function readMapFile(fileURL) {
     .then((fileContent) => {
       parseDataToArray(fileContent);
       createHexField(hexField, hexFieldWidth, hexFieldHeight);
-      loadMechFile('Mirness-1A-reset.stl', 3, 6);
-      loadMechFile('BT-BushWacker_IIC-reset.stl', 6, 3);
-      loadMechFile('BT-BushWacker_IIC-reset.stl', 7, 5);
     })
     .catch((error) => {
       console.error('Error:', error.message);
@@ -151,7 +159,7 @@ function createHexField(hexField, hexFieldWidth, hexFieldHeight) {
 }
 
 // Load STL file
-function loadMechFile(filename, x, y) {
+function loadMechFile(filename, x, y, angle) {
   const loader = new STLLoader();
   loader.load('models/' + filename, function (geometry) {
     const material = new THREE.MeshLambertMaterial({ color: 0x666666 });
@@ -160,6 +168,7 @@ function loadMechFile(filename, x, y) {
     mesh.position.set(-0.5, 0, 1.25);
     moveMechToHex(mesh, hexField[x][y]);
     mesh.rotation.set(-Math.PI / 2, 0, 0);
+    rotateMech(mesh, THREE.MathUtils.degToRad(angle * 60));
     mesh.scale.set(0.05, 0.05, 0.05);
     scene.add(mesh);
   },
