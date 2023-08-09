@@ -84,7 +84,6 @@ function parseDataToArray(fileContent) {
   }
   hexFieldWidth = hexField[0].length;
   hexFieldHeight = hexField.length;
-  console.log(hexFieldWidth, hexFieldHeight);
 }
 
 function readMapFile(fileURL) {

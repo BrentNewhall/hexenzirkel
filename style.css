@@ -23,7 +23,7 @@
   
 /* Menu */
 .menu {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Roboto', Arial, Helvetica, sans-serif;
     display: none;
     position: absolute;
     left: 1em;
