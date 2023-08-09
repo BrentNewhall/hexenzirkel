@@ -10,6 +10,8 @@ let hexFieldHeight = 1;
 const colorMap = {
   'g': 0x00aa00,
   'm': 0x8b4513,
+  'w': 0x0000aa,
+  'r': 0xf4a460,
 }
 let moving = null;
 
@@ -42,6 +44,7 @@ function getBaseLand() {
   const cubeGeometry = new THREE.BoxGeometry(30, 30, 30);
   const cubeMesh = new THREE.Mesh(cubeGeometry, material);
   cubeMesh.position.y = -15.1;
+  cubeMesh.customType = 'base';
   return cubeMesh;
 }
 scene.add(getBaseLand());
@@ -221,6 +224,15 @@ function moveMechToHex(mech, hex) {
 }
 
 function addSelection(object) {
+  // If clicking on the base, do nothing
+  if( object.customType == 'base' ) {
+    return;
+  }
+  // If clicking on a hex and selectedColor is not null, change hex color
+  if( object.customType == 'hex'  &&  selectedColor != null ) {
+    object.material.color.setHex(selectedColor);
+    return;
+  }
   if( object.customType == 'hex'  &&  selections.length > 0  &&  selections[selections.length-1].object.customType == 'mech') {
     // Get the previous selection (a mech)
     const previousSelection = selections.pop();
@@ -306,3 +318,38 @@ function animate() {
 }
 
 animate();
+
+// Hamburger menu
+const menuToggle = document.querySelector('.menu-toggle');
+const menu = document.querySelector('.menu');
+
+menuToggle.addEventListener('click', () => {
+  menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+});
+document.getElementById('menu-btn-change-tiles').addEventListener('click', () => {
+  menu.style.display = 'none';
+  const palette = document.getElementById('tile-palette');
+  palette.style.display = (palette.style.display === 'block') ? 'none' : 'block';
+  selectedColor = null;
+});
+var selectedColor = null;
+function setupPalette() {
+  const palette = document.getElementById('tile-palette');
+  for( let [key,value] of Object.entries(colorMap)) {
+    const div = document.createElement('div');
+    div.className = 'tile';
+    div.style.backgroundColor = '#' + value.toString(16).padStart(6, '0');
+    div.addEventListener('click', () => {
+      // Remove .tile-selected class from all .tile elements
+      const tiles = document.querySelectorAll('.tile');
+      for( let tile of tiles ) {
+        tile.classList.remove('tile-selected');
+      }
+      // Select this tile
+      div.classList.add('tile-selected');
+      selectedColor = value;
+    });
+    palette.appendChild(div);
+  }
+}
+setupPalette();

@@ -7,3 +7,58 @@
     overflow: hidden;
     background-color: #000;
 }
+
+/* Hamburger Icon */
+.menu-toggle {
+    display: block;
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    bottom: 1em;
+    left: 1em;
+    cursor: pointer;
+    background-color: #eee;
+    border-radius: 0.25em;
+}
+  
+/* Menu */
+.menu {
+    font-family: Arial, Helvetica, sans-serif;
+    display: none;
+    position: absolute;
+    left: 1em;
+    bottom: 3em;
+}
+  
+.menu ul {
+    background-color: #f4f4f4;
+    padding: 15px;
+    border-radius: 5px;
+    list-style: none;
+}
+  
+.menu a {
+    text-decoration: none;
+    color: #333;
+}
+
+/* Tile Palette */
+#tile-palette {
+    position: fixed;
+    display: none;
+    left: 4em;
+    bottom: 1em;
+    background-color: #eee;
+    border-radius: 0.25em;
+}
+.tile {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    margin: 5px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+}
+.tile-selected {
+    border: 2px solid black;
+}
