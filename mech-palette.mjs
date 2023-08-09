@@ -50,6 +50,7 @@ function loadMechForPalette() {
         mesh.rotation.set(-Math.PI / 2, 0, 0);
         mesh.scale.set(0.05, 0.05, 0.05);
         scene.add(mesh);
+        document.getElementById('mech-palette-title').innerText = filename.replace('.stl', '');
     },
     function (xhr) {
         console.log(parseInt(xhr.loaded / xhr.total * 100) + '% loaded for palette');
