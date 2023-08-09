@@ -22,8 +22,8 @@ document.getElementById('mech-palette').appendChild(renderer.domElement);
 
 let currPaletteMech = 0;
 const mechs = [
-  'BT-BushWacker_IIC-reset.stl',
-  'Mirness-1A-reset.stl'
+  'BT-BushWacker_IIC.stl',
+  'Mirness-1A.stl'
 ];
 let mesh = null;
 
