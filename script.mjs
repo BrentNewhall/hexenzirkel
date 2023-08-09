@@ -14,6 +14,7 @@ const colorMap = {
   'r': 0xf4a460,
 }
 let moving = null;
+let heightChange = 0;
 
 // Create the scene and camera
 const scene = new THREE.Scene();
@@ -235,6 +236,11 @@ function addSelection(object) {
     object.material.color.setHex(selectedColor);
     return;
   }
+  // If clicking on a hex and heightChange is not 0, change hex height
+  if( object.customType == 'hex'  &&  heightChange != 0 ) {
+    changeHexHeight(object, heightChange);
+    return;
+  }
   if( object.customType == 'hex'  &&  selections.length > 0  &&  selections[selections.length-1].object.customType == 'mech') {
     // Get the previous selection (a mech)
     const previousSelection = selections.pop();
@@ -315,6 +321,21 @@ function moveMech() {
   }
 }
 
+function changeHexHeight(object,amount) {
+  if( amount > 0  &&  hexField[object.hexFieldX][object.hexFieldY].height < 9 ) {
+    hexField[object.hexFieldX][object.hexFieldY].height += amount;
+    object.scale.y += amount * 0.25;
+    object.position.y = hexField[object.hexFieldX][object.hexFieldY].height * 0.0625;
+    object.geometry.computeBoundingBox();
+  }
+  else if( amount < 0  &&  hexField[object.hexFieldX][object.hexFieldY].height > 0 ) {
+    hexField[object.hexFieldX][object.hexFieldY].height += amount;
+    object.scale.y += amount * 0.25;
+    object.position.y = hexField[object.hexFieldX][object.hexFieldY].height * 0.0625;
+    object.geometry.computeBoundingBox();
+  }
+}
+
 function animate() {
   if( moving != null ) {
     moveMech();
@@ -329,9 +350,14 @@ animate();
 // Hamburger menu
 const menuToggle = document.querySelector('.menu-toggle');
 const menu = document.querySelector('.menu');
+const mechPalette = document.getElementById('mech-palette');
 
 menuToggle.addEventListener('click', () => {
   menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+  if( menu.style.display === 'block' ) {
+    document.getElementById('tile-palette').style.display = 'none';
+    mechPalette.style.display = 'none';
+  }
 });
 document.getElementById('menu-btn-change-tiles').addEventListener('click', () => {
   menu.style.display = 'none';
@@ -358,6 +384,54 @@ function setupColorPalette() {
     });
     palette.appendChild(div);
   }
+  const upDiv = document.createElement('div');
+  upDiv.className = 'tile';
+  upDiv.style.backgroundColor = '#ffffff';
+  upDiv.addEventListener('click', () => {
+    if( heightChange === 0 ) {
+      heightChange = 1;
+      // Remove .tile-selected class from all .tile elements
+      const tiles = document.querySelectorAll('.tile');
+      for( let tile of tiles ) {
+        tile.classList.remove('tile-selected');
+      }
+      // Select this tile
+      upDiv.classList.add('tile-selected');
+    }
+    else {
+      heightChange = 0;
+      upDiv.classList.remove('tile-selected');
+    }
+  });
+  const upSpan = document.createElement('span');
+  upSpan.className = 'tile-control';
+  upSpan.innerHTML = '&#x25B2;';
+  upDiv.appendChild(upSpan);
+  palette.appendChild(upDiv);
+  const downDiv = document.createElement('div');
+  downDiv.className = 'tile';
+  downDiv.style.backgroundColor = '#ffffff';
+  downDiv.addEventListener('click', () => {
+    if( heightChange === 0 ) {
+      heightChange = -1;
+      // Remove .tile-selected class from all .tile elements
+      const tiles = document.querySelectorAll('.tile');
+      for( let tile of tiles ) {
+        tile.classList.remove('tile-selected');
+      }
+      // Select this tile
+      downDiv.classList.add('tile-selected');
+    }
+    else {
+      heightChange = 0;
+      downDiv.classList.remove('tile-selected');
+    }
+  });
+  const downSpan = document.createElement('span');
+  downSpan.className = 'tile-control';
+  downSpan.innerHTML = '&#x25BC;';
+  downDiv.appendChild(downSpan);
+  palette.appendChild(downDiv);
   const closeDiv = document.createElement('div');
   closeDiv.className = 'tile';
   closeDiv.style.backgroundColor = '#ffffff';
@@ -366,7 +440,7 @@ function setupColorPalette() {
     selectedColor = null;
   });
   const closeSpan = document.createElement('span');
-  closeSpan.className = 'tile-close-x';
+  closeSpan.className = 'tile-control';
   closeSpan.innerHTML = '&times;';
   closeDiv.appendChild(closeSpan);
   palette.appendChild(closeDiv);
