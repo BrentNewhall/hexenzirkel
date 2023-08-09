@@ -7,7 +7,7 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(0, 1, 3);
 
-const sun = new THREE.DirectionalLight(0xffffff, 5.0);
+const sun = new THREE.DirectionalLight(0xffffff, 10.0);
 sun.position.set(5, 10, 5); // Position the light to simulate the sun
 scene.add(sun);
 
