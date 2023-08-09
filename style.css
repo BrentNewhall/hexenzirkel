@@ -54,11 +54,19 @@
 }
 .tile {
     display: inline-block;
+    position: relative;
     width: 30px;
     height: 30px;
     margin: 5px;
     cursor: pointer;
     border: 1px solid #ccc;
+}
+.tile-close-x {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-family: Arial;
 }
 .tile-selected {
     border: 2px solid black;
@@ -97,4 +105,8 @@
     left: 50%;
     bottom: 0px;
     transform: translateX(-50%);
+}
+#mech-palette-close {
+    right: 0px;
+    top: 0px;
 }

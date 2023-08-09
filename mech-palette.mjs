@@ -90,4 +90,6 @@ document.getElementById('mech-palette-previous').addEventListener('click', () =>
 document.getElementById('mech-palette-add').addEventListener('click', () => {
     loadMechFile( mechs[currPaletteMech], 0, 0, 0 );
 });
-
+document.getElementById('mech-palette-close').addEventListener('click', () => {
+    mechPalette.style.display = 'none';
+});

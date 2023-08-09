@@ -354,6 +354,17 @@ function setupColorPalette() {
     });
     palette.appendChild(div);
   }
+  const closeDiv = document.createElement('div');
+  closeDiv.className = 'tile';
+  closeDiv.style.backgroundColor = '#ffffff';
+  closeDiv.addEventListener('click', () => {
+    palette.style.display = 'none';
+  });
+  const closeSpan = document.createElement('span');
+  closeSpan.className = 'tile-close-x';
+  closeSpan.innerHTML = '&times;';
+  closeDiv.appendChild(closeSpan);
+  palette.appendChild(closeDiv);
 }
 setupColorPalette();
 
