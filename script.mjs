@@ -359,6 +359,7 @@ function setupColorPalette() {
   closeDiv.style.backgroundColor = '#ffffff';
   closeDiv.addEventListener('click', () => {
     palette.style.display = 'none';
+    selectedColor = null;
   });
   const closeSpan = document.createElement('span');
   closeSpan.className = 'tile-close-x';
