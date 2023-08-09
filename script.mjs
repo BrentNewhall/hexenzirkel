@@ -166,7 +166,7 @@ function loadMechFile(filename, x, y, angle) {
     const mesh = new THREE.Mesh(geometry, material);
     mesh.customType = 'mech';
     mesh.position.set(-0.5, 0, 1.25);
-    moveMechToHex(mesh, hexField[x][y]);
+    moveMechToHex(mesh, hexField[x][y], x, y);
     mesh.rotation.set(-Math.PI / 2, 0, 0);
     rotateMech(mesh, THREE.MathUtils.degToRad(angle * 60));
     mesh.scale.set(0.05, 0.05, 0.05);
@@ -208,7 +208,7 @@ function onClick(event) {
   }
 }
 
-function moveMechToHex(mech, hex) {
+function moveMechToHex(mech, hex, x, y) {
   if( "height" in hex ) {
     mech.position.x = hex.x * 1.75 - hexFieldWidth * 0.75;
     mech.position.z = hex.y * 1.75 - hexFieldHeight * 0.75;
@@ -220,6 +220,8 @@ function moveMechToHex(mech, hex) {
     mech.position.x = hex.position.x;
     mech.position.z = hex.position.z;
   }
+  mech.customX = x;
+  mech.customY = y;
 }
 
 function addSelection(object) {
@@ -243,6 +245,8 @@ function addSelection(object) {
       dx: (object.position.x - previousSelection.object.position.x) / 50,
       dz: (object.position.z - previousSelection.object.position.z) / 50,
     };
+    previousSelection.object.customX = object.hexFieldX;
+    previousSelection.object.customY = object.hexFieldY;
     return;
   }
   // If re-clicking on the same hex, reset the color and remove it from selections
@@ -332,7 +336,7 @@ document.getElementById('menu-btn-change-tiles').addEventListener('click', () =>
   selectedColor = null;
 });
 var selectedColor = null;
-function setupPalette() {
+function setupColorPalette() {
   const palette = document.getElementById('tile-palette');
   for( let [key,value] of Object.entries(colorMap)) {
     const div = document.createElement('div');
@@ -351,4 +355,6 @@ function setupPalette() {
     palette.appendChild(div);
   }
 }
-setupPalette();
+setupColorPalette();
+
+export { loadMechFile };
