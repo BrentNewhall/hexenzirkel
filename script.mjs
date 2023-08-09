@@ -176,7 +176,7 @@ function loadMechFile(filename, x, y, angle) {
     console.log(parseInt(xhr.loaded / xhr.total * 100) + '% loaded');
   },
   function (error) {
-    console.log('An error loading the STL occurred: ', error);
+    console.error('An error loading the STL occurred: ', error);
   });
 }
 
@@ -211,6 +211,7 @@ function onClick(event) {
 function moveMechToHex(mech, hex, x, y) {
   if( "height" in hex ) {
     mech.position.x = hex.x * 1.75 - hexFieldWidth * 0.75;
+    mech.position.y = hex.height * 0.25;
     mech.position.z = hex.y * 1.75 - hexFieldHeight * 0.75;
     if( hex.x % 2 == 1) {
       mech.position.z -= 0.875;
@@ -243,6 +244,7 @@ function addSelection(object) {
       object: previousSelection.object,
       target: object,
       dx: (object.position.x - previousSelection.object.position.x) / 50,
+      dy: (object.position.y - previousSelection.object.position.y) / 50,
       dz: (object.position.z - previousSelection.object.position.z) / 50,
     };
     previousSelection.object.customX = object.hexFieldX;
@@ -303,9 +305,11 @@ window.addEventListener('keydown', function (event) {
 function moveMech() {
   const mech = moving.object;
   mech.position.x += moving.dx;
+  mech.position.y += moving.dy;
   mech.position.z += moving.dz;
   if( Math.abs(mech.position.x - moving.target.position.x) < 0.1  &&  Math.abs(mech.position.z - moving.target.position.z) < 0.1 ) {
     mech.position.x = moving.target.position.x;
+    mech.position.y = moving.target.position.y;
     mech.position.z = moving.target.position.z;
     moving = null;
   }
