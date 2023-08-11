@@ -431,6 +431,12 @@ function setupColorPalette() {
   closeDiv.addEventListener('click', () => {
     palette.style.display = 'none';
     selectedColor = null;
+    // Remove .tile-selected class from all .tile elements
+    const tiles = document.querySelectorAll('.tile');
+    for( let tile of tiles ) {
+      tile.classList.remove('tile-selected');
+    }
+    heightChange = 0;
   });
   const closeSpan = document.createElement('span');
   closeSpan.className = 'tile-control';
