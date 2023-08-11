@@ -6,6 +6,8 @@ let selections = [];
 let hexField = [];
 let hexFieldWidth = 1;
 let hexFieldHeight = 1;
+const hexagonSize = 1;
+const hexagonDepth = 1;
 
 const colorMap = {
   'g': 0x00aa00,
@@ -127,21 +129,19 @@ function create3DHexagonGeometry(size, depth) {
     return geometry;
   }
 
-const hexagonSize = 1;
-const hexagonDepth = 0.2;
-
 function createHexField(hexField, hexFieldWidth, hexFieldHeight) {
   const height = 0.25;
     const xOffset = hexFieldWidth * 0.75;
     const yOffset = hexFieldHeight * 0.75;
     for( let j = 0; j < hexFieldHeight; j++) {
         for( let i = 0; i < hexFieldWidth; i++) {
-            const hexagonGeometry = create3DHexagonGeometry(hexagonSize, hexagonDepth + hexField[i][j].height * height);
+            const hexagonGeometry = create3DHexagonGeometry(hexagonSize, 0.2);
             const material = new THREE.MeshLambertMaterial({ color: 0xeeeeee });
             const hexagonMesh = new THREE.Mesh(hexagonGeometry, material);
             hexagonMesh.customType = 'hex';
             hexagonMesh.hexFieldX = i;
             hexagonMesh.hexFieldY = j;
+            changeHexHeight(hexagonMesh, 0);
             // Set mesh color
             hexagonMesh.material.color.setHex(hexField[i][j].color);
             // Position the hexagon appropriately
@@ -151,8 +151,6 @@ function createHexField(hexField, hexFieldWidth, hexFieldHeight) {
             if( i % 2 == 1) {
                 hexagonMesh.position.z -= 0.875;
             }
-            // Raise the hexagon appropriately
-            hexagonMesh.position.y = hexField[i][j].height * height;
             hexagonGeometry.computeBoundingBox();
             scene.add(hexagonMesh);
         }
@@ -322,17 +320,12 @@ function moveMech() {
 }
 
 function changeHexHeight(object,amount) {
-  if( amount > 0  &&  hexField[object.hexFieldX][object.hexFieldY].height < 9 ) {
+  if( hexField[object.hexFieldX][object.hexFieldY].height + amount >= 0  &&  hexField[object.hexFieldX][object.hexFieldY].height + amount <= 9 ) {
     hexField[object.hexFieldX][object.hexFieldY].height += amount;
-    object.scale.y += amount * 0.25;
-    object.position.y = hexField[object.hexFieldX][object.hexFieldY].height * 0.0625;
+    const newHeight = hexField[object.hexFieldX][object.hexFieldY].height;
+    object.scale.y = hexagonDepth * (newHeight + 1);
     object.geometry.computeBoundingBox();
-  }
-  else if( amount < 0  &&  hexField[object.hexFieldX][object.hexFieldY].height > 0 ) {
-    hexField[object.hexFieldX][object.hexFieldY].height += amount;
-    object.scale.y += amount * 0.25;
-    object.position.y = hexField[object.hexFieldX][object.hexFieldY].height * 0.0625;
-    object.geometry.computeBoundingBox();
+    object.position.y = newHeight * hexagonDepth / 5;
   }
 }
 
