@@ -50,7 +50,25 @@ function getBaseLand() {
   cubeMesh.customType = 'base';
   return cubeMesh;
 }
-scene.add(getBaseLand());
+function resizeBaseLand(baseLand, newSize) {
+  baseLand.scale.set( newSize, 1, newSize );
+}
+let baseLand = getBaseLand();
+scene.add(baseLand);
+
+function createBaseHexField(hexField, hexFieldWidth, hexFieldHeight) {
+  for( let i = 0; i < hexFieldWidth; i++ ) {
+    hexField[i] = [];
+    for( let j = 0; j < hexFieldHeight; j++ ) {
+      hexField[i][j] = {
+        height: 0,
+        color: colorMap['g'],
+        x: i,
+        y: j
+      }
+    }
+  }
+}
 
 function parseDataToArray(fileContent) {
   for( let [lineIndex,line] of fileContent.split('\n').entries()) {
@@ -129,6 +147,17 @@ function create3DHexagonGeometry(size, depth) {
     return geometry;
   }
 
+function clearHexField(hexField, hexFieldWidth, hexFieldHeight) {
+  for( let j = 0; j < hexFieldHeight; j++ ) {
+    for( let i = 0; i < hexFieldWidth; i++ ) {
+      if( "mesh" in hexField[i][j] ) {
+        scene.remove(hexField[i][j].mesh );
+      }
+    }
+  }
+  hexField = [];
+}
+
 function createHexField(hexField, hexFieldWidth, hexFieldHeight) {
   const height = 0.25;
     const xOffset = hexFieldWidth * 0.75;
@@ -152,6 +181,7 @@ function createHexField(hexField, hexFieldWidth, hexFieldHeight) {
                 hexagonMesh.position.z -= 0.875;
             }
             hexagonGeometry.computeBoundingBox();
+            hexField[i][j].mesh = hexagonMesh;
             scene.add(hexagonMesh);
         }
     }
@@ -349,6 +379,7 @@ menuToggle.addEventListener('click', () => {
   menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
   if( menu.style.display === 'block' ) {
     document.getElementById('tile-palette').style.display = 'none';
+    document.getElementById('resize-palette').style.display = 'none';
     mechPalette.style.display = 'none';
   }
 });
@@ -357,6 +388,21 @@ document.getElementById('menu-btn-change-tiles').addEventListener('click', () =>
   const palette = document.getElementById('tile-palette');
   palette.style.display = (palette.style.display === 'block') ? 'none' : 'block';
   selectedColor = null;
+});
+document.getElementById('menu-btn-resize-board').addEventListener('click', () => {
+  menu.style.display = 'none';
+  const palette = document.getElementById('resize-palette');
+  palette.style.display = (palette.style.display === 'block') ? 'none' : 'block';
+});
+document.getElementById('resize-board').addEventListener('click', () => {
+  clearHexField(hexField, hexFieldWidth, hexFieldHeight);
+  hexFieldWidth = parseInt(document.getElementById('board-width').value);
+  hexFieldHeight = parseInt(document.getElementById('board-length').value);
+  createBaseHexField(hexField, hexFieldWidth, hexFieldHeight);
+  createHexField(hexField, hexFieldWidth, hexFieldHeight);
+  const maxDimension = (hexFieldWidth > hexFieldHeight) ? hexFieldWidth : hexFieldHeight;
+  const newBaseLandSize = maxDimension / 15;
+  resizeBaseLand(baseLand, newBaseLandSize);
 });
 var selectedColor = null;
 function setupColorPalette() {

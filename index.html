@@ -19,8 +19,15 @@
   <ul>
     <li><a href="#" id="menu-btn-add-mech">Add mech</a></li>
     <li><a href="#" id="menu-btn-change-tiles">Change tiles</a></li>
+    <li><a href="#" id="menu-btn-resize-board">Resize board</a></li>
   </ul>
 </nav>
+
+<div id="resize-palette">
+  Width: <input type="number" class="board-size" id="board-width" name="board-width" min="1" max="99" value="10" />
+  Length: <input type="number" class="board-size" id="board-length" name="board-length" min="1" max="99" value="10" />
+  <button id="resize-board">Resize</button>
+</div>
 
 <div id="tile-palette">
 </div>
