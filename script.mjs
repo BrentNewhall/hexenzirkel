@@ -50,7 +50,9 @@ function getBaseLand() {
   cubeMesh.customType = 'base';
   return cubeMesh;
 }
-function resizeBaseLand(baseLand, newSize) {
+function resizeBaseLand(baseLand, hexFieldWidth, hexFieldHeight) {
+  const maxDimension = (hexFieldWidth > hexFieldHeight) ? hexFieldWidth : hexFieldHeight;
+  const newSize = maxDimension / 13;
   baseLand.scale.set( newSize, 1, newSize );
 }
 let baseLand = getBaseLand();
@@ -117,7 +119,9 @@ function readMapFile(fileURL) {
     })
     .then((fileContent) => {
       parseDataToArray(fileContent);
+      createBaseHexField(hexField, hexFieldWidth, hexFieldHeight);
       createHexField(hexField, hexFieldWidth, hexFieldHeight);
+      resizeBaseLand(baseLand, hexFieldWidth, hexFieldHeight)
     })
 }
 
@@ -160,7 +164,7 @@ function clearHexField(hexField, hexFieldWidth, hexFieldHeight) {
 
 function createHexField(hexField, hexFieldWidth, hexFieldHeight) {
   const height = 0.25;
-    const xOffset = hexFieldWidth * 0.75;
+    const xOffset = hexFieldWidth * 0.8;
     const yOffset = hexFieldHeight * 0.75;
     for( let j = 0; j < hexFieldHeight; j++) {
         for( let i = 0; i < hexFieldWidth; i++) {
@@ -239,7 +243,7 @@ function onClick(event) {
 
 function moveMechToHex(mech, hex, x, y) {
   if( "height" in hex ) {
-    mech.position.x = hex.x * 1.75 - hexFieldWidth * 0.75;
+    mech.position.x = hex.x * 1.75 - hexFieldWidth * 0.8;
     mech.position.y = hex.height * 0.25;
     mech.position.z = hex.y * 1.75 - hexFieldHeight * 0.75;
     if( hex.x % 2 == 1) {
@@ -400,9 +404,7 @@ document.getElementById('resize-board').addEventListener('click', () => {
   hexFieldHeight = parseInt(document.getElementById('board-length').value);
   createBaseHexField(hexField, hexFieldWidth, hexFieldHeight);
   createHexField(hexField, hexFieldWidth, hexFieldHeight);
-  const maxDimension = (hexFieldWidth > hexFieldHeight) ? hexFieldWidth : hexFieldHeight;
-  const newBaseLandSize = maxDimension / 15;
-  resizeBaseLand(baseLand, newBaseLandSize);
+  resizeBaseLand(baseLand, hexFieldWidth, hexFieldHeight);
 });
 var selectedColor = null;
 function setupColorPalette() {
