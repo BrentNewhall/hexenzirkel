@@ -386,6 +386,8 @@ menuToggle.addEventListener('click', () => {
     document.getElementById('tile-palette').style.display = 'none';
     document.getElementById('resize-palette').style.display = 'none';
     mechPalette.style.display = 'none';
+    selectedColor = null;
+    heightChange = 0;
   }
 });
 document.getElementById('menu-btn-change-tiles').addEventListener('click', () => {
