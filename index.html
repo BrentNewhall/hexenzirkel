@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hexenzirkel</title>
     <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&family=Roboto+Mono&display=swap" />
     <link rel="icon" type="image/png" href="favicon.png" />
 </head>
 <body>
@@ -17,6 +17,7 @@
 </div>
 <nav class="menu">
   <ul>
+    <li><a href="#" id="menu-btn-display-dice">Display dice</a></li>
     <li><a href="#" id="menu-btn-add-mech">Add mech</a></li>
     <li><a href="#" id="menu-btn-change-tiles">Change tiles</a></li>
     <li><a href="#" id="menu-btn-resize-board">Resize board</a></li>
@@ -30,6 +31,13 @@
 </div>
 
 <div id="tile-palette">
+</div>
+
+<div id="dice-palette">
+  <button id="roll-dice">Roll</button>
+  <span id="die1" class="die">1</span> +
+  <span id="die2" class="die">1</span> =
+  <span id="dice-result">2</span>
 </div>
 
 <div id="mech-palette">

@@ -135,3 +135,25 @@
 .board-size {
     width: 3em;
 }
+
+/* Dice Palette */
+#dice-palette {
+    font-family: 'Roboto', Arial, Helvetica, sans-serif;
+    position: fixed;
+    display: none;
+    right: 1em;
+    bottom: 1em;
+    background-color: #eee;
+    border-radius: 0.25em;
+    padding: 1em;
+}
+.die {
+    font-family: 'Roboto Mono', monospace;
+    border: 1px solid black;
+    border-radius: 0.125em;
+    background-color: #fff;
+    width: 50vw;
+    height: 50vw;
+    padding: 0 0.25em 0 0.25em;
+    aspect-ratio: 1 / 1;
+}

@@ -382,6 +382,7 @@ const mechPalette = document.getElementById('mech-palette');
 menuToggle.addEventListener('click', () => {
   menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
   if( menu.style.display === 'block' ) {
+    document.getElementById('dice-palette').style.display = 'none';
     document.getElementById('tile-palette').style.display = 'none';
     document.getElementById('resize-palette').style.display = 'none';
     mechPalette.style.display = 'none';
@@ -396,6 +397,21 @@ document.getElementById('menu-btn-change-tiles').addEventListener('click', () =>
 document.getElementById('menu-btn-resize-board').addEventListener('click', () => {
   menu.style.display = 'none';
   const palette = document.getElementById('resize-palette');
+  palette.style.display = (palette.style.display === 'block') ? 'none' : 'block';
+});
+document.getElementById('roll-dice').addEventListener('click', () => {
+  let rolls = [0,0];
+  for( let i = 0; i < rolls.length; i++ ) {
+    rolls[i] = Math.floor(Math.random() * 6 + 1);
+  }
+  console.log(rolls)
+  document.getElementById("die1").innerText = rolls[0];
+  document.getElementById("die2").innerText = rolls[1];
+  document.getElementById("dice-result").innerText = rolls[0] + rolls[1];
+});
+document.getElementById('menu-btn-display-dice').addEventListener('click', () => {
+  menu.style.display = 'none';
+  const palette = document.getElementById('dice-palette');
   palette.style.display = (palette.style.display === 'block') ? 'none' : 'block';
 });
 document.getElementById('resize-board').addEventListener('click', () => {
